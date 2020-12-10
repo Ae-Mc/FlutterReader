@@ -38,7 +38,8 @@ class ApplicationState with ChangeNotifier {
     FirebaseAuth.instance.userChanges().listen((User user) {
       if (user == null) {
         _loginState = ApplicationLoginState.loggedOut;
-        _newsSubscription.cancel();
+        if(_newsSubscription != null)
+          _newsSubscription.cancel();
       } else {
         _newsSubscription =
             FirebaseFirestore.instance.collection('news').snapshots().listen(
@@ -46,7 +47,6 @@ class ApplicationState with ChangeNotifier {
             _news = [];
             snapshot.docs.forEach(
               (document) {
-                print(document);
                 News newsItem = News(
                   document.data()[countryCode]["hintText"],
                   document.data()[countryCode]["headerFirstLine"],

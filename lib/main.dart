@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_reader/BookReaderApp.dart';
 import 'package:flutter_reader/states/ApplicationState.dart';
+import 'package:flutter_reader/states/ReaderState.dart';
 import 'package:provider/provider.dart';
 
 const CatalogRoute = '/';
@@ -16,10 +17,18 @@ void main() {
 class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<ApplicationState>(
-      create: (context) => ApplicationState(),
-      builder: (context, _) => BookReaderApp(),
-      lazy: false,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ReaderState>(
+          create: (_) => ReaderState(),
+          lazy: false,
+        ),
+        ChangeNotifierProvider<ApplicationState>(
+          create: (_) => ApplicationState(),
+          lazy: false,
+        ),
+      ],
+      child: BookReaderApp(),
     );
   }
 }

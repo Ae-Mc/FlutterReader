@@ -114,7 +114,6 @@ class _RegistrationScreen extends State<RegistrationScreen> {
 
   void _signUpButtonOnTap(BuildContext context) async {
     UserCredential userCredential;
-    print("Name: $_name\nEmail: $_email\nPassword: $_password");
     _error = "";
     ApplicationState applicationState =
         Provider.of<ApplicationState>(context, listen: false);

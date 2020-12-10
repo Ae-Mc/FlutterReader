@@ -11,7 +11,7 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreen extends State<WelcomeScreen> {
   bool _popped;
 
-  void applicationStateListener() {
+  void applicationStateListener(BuildContext context) {
     if (Provider.of<ApplicationState>(
               context,
               listen: false,
@@ -38,15 +38,18 @@ class _WelcomeScreen extends State<WelcomeScreen> {
         Provider.of<ApplicationState>(
           context,
           listen: false,
-        ).addListener(applicationStateListener);
+        ).addListener(() => applicationStateListener(context));
     });
     super.initState();
   }
 
   @override
   void dispose() {
-    Provider.of<ApplicationState>(context, listen: false)
-        .removeListener(applicationStateListener);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context
+          .read<ApplicationState>()
+          .removeListener(() => applicationStateListener(context));
+    });
     super.dispose();
   }
 

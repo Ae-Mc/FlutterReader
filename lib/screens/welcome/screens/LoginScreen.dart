@@ -107,7 +107,6 @@ class _SignInScreen extends State<SignInScreen> {
   }
 
   void _logInButtonOnTap(BuildContext context) async {
-    print("Email: $_email\nPassword: $_password");
     _error = "";
     ApplicationState applicationState =
         Provider.of<ApplicationState>(context, listen: false);

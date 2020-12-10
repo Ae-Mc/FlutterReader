@@ -1,47 +1,33 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_reader/generated/l10n.dart';
+import 'package:flutter_reader/states/ReaderState.dart';
+import 'package:provider/provider.dart';
 
 class SettingsMenu extends StatefulWidget {
   final AnimationController _animationController;
-  final Function callback;
 
-  SettingsMenu(this._animationController, this.callback);
+  SettingsMenu(this._animationController);
 
   createState() => _SettingsMenu();
 }
 
 class _SettingsMenu extends State<SettingsMenu> {
-  final List<String> fonts = ["Arial", "Barlow", "Times New Roman"];
-  final List<String> colors = ["White", "Black", "Sepia"];
-  final List<String> sizes = ["8", "16", "24", "32"];
-  int selectedFont = 0, selectedColor = 0, selectedSize = 0;
-
-  void onFontChange(int selectedFont) {
-    this.selectedFont = selectedFont;
-    widget.callback(
-      fonts[selectedFont],
-      colors[selectedColor],
-      int.parse(sizes[selectedSize]),
-    );
+  void onFontChange(BuildContext context, int selectedFont) {
+    print("Font changed to ${ReaderState.FontFamilies[selectedFont]}");
+    Provider.of<ReaderState>(context, listen: false).fontFamily =
+        ReaderState.FontFamilies[selectedFont];
   }
 
-  void onColorChange(int selectedColor) {
-    this.selectedColor = selectedColor;
-    widget.callback(
-      fonts[selectedFont],
-      colors[selectedColor],
-      int.parse(sizes[selectedSize]),
-    );
+  void onColorChange(BuildContext context, int selectedTheme) {
+    Provider.of<ReaderState>(context, listen: false).theme =
+        ReaderState.Themes[selectedTheme];
+    print("Theme changed to ${ReaderState.Themes[selectedTheme].name}");
   }
 
-  void onSizeChange(int selectedSize) {
-    this.selectedSize = selectedSize;
-    widget.callback(
-      fonts[selectedFont],
-      colors[selectedColor],
-      int.parse(sizes[selectedSize]),
-    );
+  void onSizeChange(BuildContext context, int selectedSize) {
+    Provider.of<ReaderState>(context, listen: false).fontSize =
+        ReaderState.FontSizes[selectedSize];
+    print("Size changed to ${ReaderState.FontSizes[selectedSize]}");
   }
 
   @override
@@ -72,14 +58,25 @@ class _SettingsMenu extends State<SettingsMenu> {
             style: Theme.of(context).textTheme.bodyText1,
           ),
           SizedBox(height: 15),
-          Slider(fonts, onChange: onFontChange),
+          Slider(
+            ReaderState.FontFamilies,
+            onChange: (int selectedFont) => onFontChange(context, selectedFont),
+            defaultElement: ReaderState.FontFamilies.indexOf(
+                Provider.of<ReaderState>(context).fontFamily),
+          ),
           SizedBox(height: 20),
           Text(
             S.current.BackgroundColor,
             style: Theme.of(context).textTheme.bodyText1,
           ),
           SizedBox(height: 15),
-          Slider(colors, onChange: onColorChange,),
+          Slider(
+            ReaderState.Themes.map((e) => e.name).toList(),
+            onChange: (int selectedColor) =>
+                onColorChange(context, selectedColor),
+            defaultElement: ReaderState.Themes.indexOf(
+                Provider.of<ReaderState>(context).theme),
+          ),
           SizedBox(height: 20),
           Text(
             S.current.Size,
@@ -88,14 +85,24 @@ class _SettingsMenu extends State<SettingsMenu> {
           SizedBox(height: 15),
           Container(
             width: 150,
-            child: SizeChoice(sizes, onChange: onSizeChange,),
+            child: SizeChoice(
+              ReaderState.FontSizes.map((e) => e.toString()).toList(),
+              onChange: (int selectedSize) =>
+                  onSizeChange(context, selectedSize),
+              defaultElement: ReaderState.FontSizes.indexOf(
+                  Provider.of<ReaderState>(context).fontSize),
+            ),
           ),
           SizedBox(height: 20),
           Center(
             child: IconButton(
                 icon: Icon(
                   Icons.menu,
-                  color: Theme.of(context).shadowColor,
+                  color: Color.lerp(
+                    Provider.of<ReaderState>(context).theme.textColor,
+                    Provider.of<ReaderState>(context).theme.backgroundColor,
+                    0.5,
+                  ),
                   size: 30,
                 ),
                 onPressed: () {
